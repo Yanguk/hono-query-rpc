@@ -1,6 +1,7 @@
-> WARN: in development, 아직 개발중이니 사용하지 마세요
+> **WARN:** This library is still under development. Please wait for minor version 1 before using it in production.
+> **경고:** 아직 개발 중입니다. 프로덕션 사용 전 마이너 버전 1을 기다려주세요.
 
-# honoq
+# hono-query-rpc
 
 Hono RPC를 [TanStack Query](https://tanstack.com/query)와 함께 사용할 때 [tRPC](https://trpc.io/)와 동일한 개발 경험을 제공하는 유틸리티 라이브러리입니다.
 
@@ -14,13 +15,13 @@ const create   = rpc.api.users.$post.useMutation({ onSuccess: () => invalidate()
 
 ```bash
 # npm
-npm install honoq
+npm install hono-query-rpc
 
 # pnpm
-pnpm add honoq
+pnpm add hono-query-rpc
 
 # bun
-bun add honoq
+bun add hono-query-rpc
 ```
 
 **peer dependencies**
@@ -34,7 +35,7 @@ bun add hono @tanstack/react-query react
 ```ts
 // lib/rpc.ts
 import { hc } from 'hono/client'
-import { createHonoQuery } from 'honoq'
+import { createHonoQuery } from 'hono-query-rpc'
 import type { AppType } from '@/server'   // Hono 앱 타입
 
 const client = hc<AppType>('/')
@@ -226,7 +227,7 @@ const mutationB = rpc.api.orders.$post.useMutation()
 
 ```ts
 // router.ts
-import { createHonoQuery } from 'honoq'
+import { createHonoQuery } from 'hono-query-rpc'
 import { hc } from 'hono/client'
 import { redirect } from '@tanstack/react-router'
 import type { AppType } from '@/server'
