@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -7,5 +7,7 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   treeshake: true,
-  external: ['react', '@tanstack/react-query'],
+  deps: {
+    neverBundle: ['react', '@tanstack/react-query'],
+  },
 })
