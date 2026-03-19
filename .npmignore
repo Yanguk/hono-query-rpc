@@ -2,10 +2,10 @@
 src/
 
 # 설정
-tsup.config.ts
-vitest.config.ts
-vitest.setup.ts
+tsdown.config.ts
 tsconfig.json
+test-setup.ts
+bunfig.toml
 
 # 기타
 node_modules/
