@@ -130,6 +130,11 @@ useMutation(
 
 ## Development
 
+**Prerequisites**
+
+- [Nix](https://nixos.org/download/) — reproducible dev environment
+- [direnv](https://direnv.net/) — automatically activates the dev environment
+
 ```bash
 # Install dependencies
 bun install

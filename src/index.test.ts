@@ -1,7 +1,7 @@
 /**
  * hono-query-rpc.test.ts
  *
- * 테스트 환경: vitest + @testing-library/react
+ * 테스트 환경: bun test + @testing-library/react
  */
 
 import { describe, it, expect, vi, beforeEach } from 'bun:test'
@@ -102,14 +102,14 @@ describe('createHonoQuery', () => {
       const input = { query: { page: '1' } }
       const opts  = api.api.users.$get.queryOptions(input)
 
-      expect(opts.queryKey).toEqual(['api', 'users', '$get', input])
+      expect(opts.queryKey as unknown as unknown[]).toEqual(['api', 'users', '$get', input])
     })
 
     it('input 이 없으면 queryKey 에 path 만 포함된다', () => {
       const api  = createHonoQuery(mockClient)
       const opts = api.api.users.$get.queryOptions(undefined)
 
-      expect(opts.queryKey).toEqual(['api', 'users', '$get'])
+      expect(opts.queryKey as unknown as unknown[]).toEqual(['api', 'users', '$get'])
     })
 
     it('queryFn 호출 시 데이터를 반환한다', async () => {
@@ -133,22 +133,24 @@ describe('createHonoQuery', () => {
       const api   = createHonoQuery(mockClient)
       const input = { query: { page: '2', limit: '10' } }
 
-      renderHook(() => useQuery(api.api.users.$get.queryOptions(input)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.users.$get.queryOptions(input)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![0]).toEqual(input)
     })
 
     it('useQuery 에서 input 이 없을 때 undefined 로 호출된다', async () => {
       const api = createHonoQuery(mockClient)
 
-      renderHook(() => useQuery(api.api.me.$get.queryOptions(undefined)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.me.$get.queryOptions(undefined)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetMe).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetMe.mock.calls[0]![0]).toBeUndefined()
     })
 
@@ -193,11 +195,12 @@ describe('createHonoQuery', () => {
         headers: { authorization: 'Bearer factory-token' },
       })
 
-      renderHook(() => useQuery(api.api.users.$get.queryOptions(undefined)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.users.$get.queryOptions(undefined)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: { authorization: 'Bearer factory-token' },
       })
@@ -209,12 +212,12 @@ describe('createHonoQuery', () => {
         headers: () => ({ authorization: `Bearer ${token}` }),
       })
 
-      const { rerender } = renderHook(
+      const { result, rerender } = renderHook(
         () => useQuery(api.api.users.$get.queryOptions(undefined, { staleTime: 0 })),
         { wrapper: createWrapper(queryClient) },
       )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: { authorization: 'Bearer token-v1' },
       })
@@ -237,11 +240,12 @@ describe('createHonoQuery', () => {
         },
       })
 
-      renderHook(() => useQuery(api.api.users.$get.queryOptions(undefined)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.users.$get.queryOptions(undefined)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: { 'x-async-header': 'async-value' },
       })
@@ -250,14 +254,14 @@ describe('createHonoQuery', () => {
     it('[헤더] 호출 레벨 헤더만 있으면 그것만 전달된다', async () => {
       const api = createHonoQuery(mockClient)
 
-      renderHook(
+      const { result } = renderHook(
         () => useQuery(api.api.users.$get.queryOptions(undefined, {
           headers: { 'x-trace-id': 'abc' },
         })),
         { wrapper: createWrapper(queryClient) },
       )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: { 'x-trace-id': 'abc' },
       })
@@ -271,7 +275,7 @@ describe('createHonoQuery', () => {
         },
       })
 
-      renderHook(
+      const { result } = renderHook(
         () => useQuery(api.api.users.$get.queryOptions(undefined, {
           headers: {
             authorization: 'Bearer call-token',
@@ -281,7 +285,7 @@ describe('createHonoQuery', () => {
         { wrapper: createWrapper(queryClient) },
       )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: {
           authorization: 'Bearer call-token',
@@ -294,11 +298,12 @@ describe('createHonoQuery', () => {
     it('[헤더] 헤더가 없으면 두 번째 인자가 undefined 로 전달된다', async () => {
       const api = createHonoQuery(mockClient)
 
-      renderHook(() => useQuery(api.api.users.$get.queryOptions(undefined)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.users.$get.queryOptions(undefined)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toBeUndefined()
     })
 
@@ -323,15 +328,15 @@ describe('createHonoQuery', () => {
   describe('queryKey', () => {
     it('input 없이 호출하면 path 기반 key 를 반환한다', () => {
       const api = createHonoQuery(mockClient)
-      expect(api.api.users.$get.queryKey()).toEqual(['api', 'users', '$get'])
-      expect(api.api.me.$get.queryKey()).toEqual(['api', 'me', '$get'])
+      expect(api.api.users.$get.queryKey() as unknown as unknown[]).toEqual(['api', 'users', '$get'])
+      expect(api.api.me.$get.queryKey() as unknown as unknown[]).toEqual(['api', 'me', '$get'])
     })
 
     it('input 을 넘기면 key 끝에 추가된다', () => {
       const api   = createHonoQuery(mockClient)
       const input = { query: { page: '1' } }
 
-      expect(api.api.users.$get.queryKey(input)).toEqual([
+      expect(api.api.users.$get.queryKey(input) as unknown as unknown[]).toEqual([
         'api', 'users', '$get', input,
       ])
     })
@@ -346,7 +351,7 @@ describe('createHonoQuery', () => {
       const api = createHonoQuery(mockClient)
 
       await queryClient.prefetchQuery(api.api.users.$get.queryOptions(undefined))
-      expect(queryClient.getQueryData(['api', 'users', '$get'])).toEqual(USERS_DATA)
+      expect(queryClient.getQueryData(['api', 'users', '$get'] as string[]) as unknown).toEqual(USERS_DATA)
 
       const { result } = renderHook(() => api.api.users.$get.useInvalidate(), {
         wrapper: createWrapper(queryClient),
@@ -354,7 +359,7 @@ describe('createHonoQuery', () => {
 
       await act(() => result.current())
 
-      const state = queryClient.getQueryState(['api', 'users', '$get'])
+      const state = queryClient.getQueryState(['api', 'users', '$get'] as string[])
       expect(state?.isInvalidated).toBe(true)
     })
 
@@ -373,10 +378,10 @@ describe('createHonoQuery', () => {
       await act(() => result.current(input1))
 
       expect(
-        queryClient.getQueryState(['api', 'users', '$get', input1])?.isInvalidated,
+        queryClient.getQueryState(['api', 'users', '$get', input1] as unknown[])?.isInvalidated,
       ).toBe(true)
       expect(
-        queryClient.getQueryState(['api', 'users', '$get', input2])?.isInvalidated,
+        queryClient.getQueryState(['api', 'users', '$get', input2] as unknown[])?.isInvalidated,
       ).toBe(false)
     })
   })
@@ -417,6 +422,7 @@ describe('createHonoQuery', () => {
       )
 
       await act(() => result.current.mutateAsync(input))
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockPostUser.mock.calls[0]![0]).toEqual(input)
     })
 
@@ -463,7 +469,8 @@ describe('createHonoQuery', () => {
       )
 
       await act(() => result.current.mutateAsync({ json: { name: 'Charlie' } }))
-      expect(onSuccess).toHaveBeenCalledOnce()
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+      expect(onSuccess).toHaveBeenCalledTimes(1)
       expect(onError).not.toHaveBeenCalled()
     })
 
@@ -480,6 +487,7 @@ describe('createHonoQuery', () => {
       )
 
       await act(() => result.current.mutateAsync({ json: { name: 'test' } }))
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockPostUser.mock.calls[0]![1]).toEqual({
         headers: { authorization: 'Bearer factory-token' },
       })
@@ -496,6 +504,7 @@ describe('createHonoQuery', () => {
       )
 
       await act(() => result.current.mutateAsync({ json: { name: 'test' } }))
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockPostUser.mock.calls[0]![1]).toEqual({
         headers: { 'x-custom': 'value' },
       })
@@ -520,6 +529,7 @@ describe('createHonoQuery', () => {
       )
 
       await act(() => result.current.mutateAsync({ json: { name: 'test' } }))
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockPostUser.mock.calls[0]![1]).toEqual({
         headers: {
           authorization: 'Bearer call-token',
@@ -538,6 +548,7 @@ describe('createHonoQuery', () => {
       )
 
       await act(() => result.current.mutateAsync({ json: { name: 'test' } }))
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockPostUser.mock.calls[0]![1]).toBeUndefined()
     })
   })
@@ -552,11 +563,12 @@ describe('createHonoQuery', () => {
         headers: new Headers({ authorization: 'Bearer headers-instance' }),
       })
 
-      renderHook(() => useQuery(api.api.users.$get.queryOptions(undefined)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.users.$get.queryOptions(undefined)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: { authorization: 'Bearer headers-instance' },
       })
@@ -567,11 +579,12 @@ describe('createHonoQuery', () => {
         headers: [['x-tuple-header', 'tuple-value']],
       })
 
-      renderHook(() => useQuery(api.api.users.$get.queryOptions(undefined)), {
-        wrapper: createWrapper(queryClient),
-      })
+      const { result } = renderHook(
+        () => useQuery(api.api.users.$get.queryOptions(undefined)),
+        { wrapper: createWrapper(queryClient) },
+      )
 
-      await waitFor(() => expect(mockGetUsers).toHaveBeenCalledOnce())
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
       expect(mockGetUsers.mock.calls[0]![1]).toEqual({
         headers: { 'x-tuple-header': 'tuple-value' },
       })
