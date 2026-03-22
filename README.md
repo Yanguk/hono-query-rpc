@@ -239,6 +239,39 @@ import { HTTPError } from "hono-query-rpc";
 
 ---
 
+## Example
+
+A minimal blog app (Next.js 15 + Hono + TanStack Query) is included in the [`example/`](./example) directory.
+
+```bash
+# 1. Build the library (from repo root)
+bun run build
+
+# 2. Install example dependencies
+cd example
+bun install
+
+# 3. Start dev server
+bun run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+**What the example demonstrates**
+
+| Feature | Where |
+|---|---|
+| `queryOptions()` | `app/page.tsx` — fetch all posts |
+| `queryOptions({ param })` | `app/posts/[id]/page.tsx` — fetch single post |
+| `mutationOptions()` | `components/CreatePostModal.tsx` — create post |
+| `mutationOptions()` | `app/page.tsx` + `app/posts/[id]/page.tsx` — delete post |
+| `queryKey()` invalidation | after create/delete mutations |
+| `HTTPError` handling | 404 on post detail page |
+| Error testing panel | `app/page.tsx` — trigger query/mutation errors in-browser |
+| TanStack Query DevTools | bottom-right corner of the example app |
+
+---
+
 ## Development
 
 **Prerequisites**
