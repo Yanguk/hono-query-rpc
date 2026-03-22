@@ -25,6 +25,10 @@ type ResolvedOptions = HonoQueryFactoryOptions & {
 
 const DEFAULT_OPTIONS = {
 	autoIdempotency: true,
+	defaultHeaders: {
+		"content-type": "application/json",
+		accept: "application/json",
+	},
 	parseResponse: (res: Response) => {
 		if (!res.ok) throw new HTTPError(res);
 		return res.json();

@@ -55,9 +55,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 function UserList() {
-  const { data, isLoading } = useQuery(
-    api.api.users.$get.queryOptions(),
-  );
+  const { data, isLoading } = useQuery(api.api.users.$get.queryOptions());
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -79,11 +77,11 @@ function UserList() {
 
 Creates a proxy client that wraps a Hono RPC client with TanStack Query integration.
 
-| Option            | Type                                             | Default                                                         | Description                                                                                                                           |
-| ----------------- | ------------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `defaultHeaders`  | `HeadersFactory`                                 | `undefined`                                                     | Headers merged into every request. Accepts a static object, a `Headers` instance, an entry tuple array, or a (async) getter function. |
-| `autoIdempotency` | `boolean`                                        | `true`                                                          | Automatically adds an `Idempotency-Key` header to mutation requests. The key is refreshed after each successful mutation.             |
-| `parseResponse`   | `(res: Response) => unknown \| Promise<unknown>` | Throws `HTTPError` on `!res.ok`, otherwise returns `res.json()` | Customize how responses are parsed and errors are thrown.                                                                             |
+| Option            | Type                                             | Default                                                                | Description                                                                                                                                                                                            |
+| ----------------- | ------------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `defaultHeaders`  | `HeadersFactory`                                 | `{ "content-type": "application/json", "accept": "application/json" }` | Headers merged into every request. Accepts a static object, a `Headers` instance, an entry tuple array, or a (async) getter function. Providing this option **replaces** the default headers entirely. |
+| `autoIdempotency` | `boolean`                                        | `true`                                                                 | Automatically adds an `Idempotency-Key` header to mutation requests. The key is refreshed after each successful mutation.                                                                              |
+| `parseResponse`   | `(res: Response) => unknown \| Promise<unknown>` | Throws `HTTPError` on `!res.ok`, otherwise returns `res.json()`        | Customize how responses are parsed and errors are thrown.                                                                                                                                              |
 
 ### `.queryOptions(input, options?)`
 
@@ -101,9 +99,12 @@ useQuery(api.api.users.$get.queryOptions({}, { enabled: false }));
 
 // With per-call hono headers
 useQuery(
-  api.api.users.$get.queryOptions({}, {
-    hono: { headers: { "x-trace-id": crypto.randomUUID() } },
-  }),
+  api.api.users.$get.queryOptions(
+    {},
+    {
+      hono: { headers: { "x-trace-id": crypto.randomUUID() } },
+    },
+  ),
 );
 ```
 
@@ -113,7 +114,7 @@ Returns a TanStack Query `mutationOptions` object.
 
 ```ts
 // Basic
-useMutation(api.api.users.$post.mutationOptions());
+useMutation(api.api.users.$post.mutationOptions({}));
 
 // With TanStack Query callbacks
 useMutation(
@@ -205,7 +206,7 @@ import { HTTPError } from "hono-query-rpc";
     throw new HTTPError(res);
   }
   return res.json();
-}
+};
 ```
 
 You can override this with `parseResponse`:
