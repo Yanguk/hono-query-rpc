@@ -12,6 +12,12 @@ const { data } = useQuery(
 const create = useMutation(api.users.$post.mutationOptions({}));
 ```
 
+**Key features**
+
+- **Auto-generated query functions** — `queryOptions()` and `mutationOptions()` are derived directly from the Hono RPC client type, so there is no boilerplate to write.
+- **Query key management** — `queryKey()` returns a stable, type-safe key for every endpoint. Use it for cache invalidation without hardcoding strings.
+- **Auto [Idempotency-Key](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Idempotency-Key) injection** — mutation requests automatically receive a unique `Idempotency-Key` header (refreshed after each successful mutation) to prevent accidental duplicate writes. Disable with `autoIdempotency: false`.
+
 ## Installation
 
 ```bash
