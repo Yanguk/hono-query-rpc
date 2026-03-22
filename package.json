@@ -1,6 +1,6 @@
 {
   "name": "hono-query-rpc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "tRPC-style TanStack Query integration for Hono RPC",
   "license": "MIT",
   "author": "yanguk",
