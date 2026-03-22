@@ -86,14 +86,14 @@ Creates a proxy client that wraps a Hono RPC client with TanStack Query integrat
 
 ### `.queryOptions(input, options?)`
 
-Returns a TanStack Query `queryOptions` object. Pass `undefined` as `input` when the endpoint takes no parameters.
+Returns a TanStack Query `queryOptions` object. Pass `{}` as `input` when the endpoint takes no parameters.
 
 ```ts
 // With input
 useQuery(api.api.users.$get.queryOptions({ query: { page: "1" } }));
 
 // Without input
-useQuery(api.api.users.$get.queryOptions());
+useQuery(api.api.users.$get.queryOptions({}));
 
 // With TanStack Query options
 useQuery(api.api.users.$get.queryOptions({}, { enabled: false }));
