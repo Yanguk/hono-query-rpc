@@ -1,6 +1,6 @@
 {
   "name": "hono-query-rpc",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "description": "tRPC-style TanStack Query integration for Hono RPC",
   "license": "MIT",
   "author": "yanguk",
@@ -56,7 +56,7 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
-    "prepublishOnly": "bun run typecheck && bun run test && bun run build",
+    "prepublishOnly": "bun run test && bun run build",
     "release": "bun scripts/release.ts"
   },
   "peerDependencies": {

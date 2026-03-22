@@ -1,8 +1,3 @@
-![Status: WIP](https://img.shields.io/badge/status-WIP-yellow)
-
-> **WARN:** This library is still under development. Please wait for minor version 1 before using it in production.
-> **경고:** 아직 개발 중입니다. 프로덕션 사용 전 마이너 버전 1을 기다려주세요.
-
 # hono-query-rpc
 
 A utility library that brings [tRPC](https://trpc.io/)-like developer experience when using Hono RPC with [TanStack Query](https://tanstack.com/query).
@@ -14,7 +9,7 @@ const { data } = useQuery(
   api.users.$get.queryOptions({ query: { page: "1" } }),
 );
 
-const create = useMutation(api.users.$post.mutationOptions());
+const create = useMutation(api.users.$post.mutationOptions({}));
 ```
 
 ## Installation
@@ -55,7 +50,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 function UserList() {
-  const { data, isLoading } = useQuery(api.api.users.$get.queryOptions());
+  const { data, isLoading } = useQuery(api.api.users.$get.queryOptions({}));
 
   if (isLoading) {
     return <p>Loading...</p>;
